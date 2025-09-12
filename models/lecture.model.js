@@ -15,7 +15,8 @@ const lectureSchema = new mongoose.Schema({
     videoUrl: {
         type: String,
         required: [true, 'Video URL is required']
-    },
+    }, //videoURL of the lecture
+    //can come from cloudinary
     duration: {
         type: Number,
         default: 0
@@ -27,11 +28,11 @@ const lectureSchema = new mongoose.Schema({
     isPreview: {
         type: Boolean,
         default: false
-    },
+    }, //for free, available or not
     order: {
         type: Number,
         required: [true, 'Lecture order is required']
-    }
+    } //order of lectures for sorting or not
 }, {
     timestamps: true,
     toJSON: { virtuals: true },
@@ -43,6 +44,7 @@ lectureSchema.pre('save', function(next) {
     if (this.duration) {
         // Round duration to 2 decimal places
         this.duration = Math.round(this.duration * 100) / 100;
+        
     }
     next();
 });
