@@ -1,0 +1,23 @@
+LMS = Learning Management System
+
+Backend only talks with cloudinary and back and forth, 
+front end is not involved.
+
+We will be designing a Secure LMS with payment gateway
+
+Stripe or Razorpay 
+
+Payment gateway interacts with Backend
+
+but its the only thing that is available on the frontend part too
+When you click on pay now info is being sent to Backend
+
+We will learn only about how backend will talk to payment gateway 
+
+basic setup -> models -> controllers -> route -> middleware -> utilities (multer) 
+Security (IMP) ENV important.
+
+RBAC -> Role based Access Control middleware stuff.
+
+npm uninstall express 
+//how to uninstall something 
