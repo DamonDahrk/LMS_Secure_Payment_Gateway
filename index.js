@@ -26,6 +26,7 @@ await connectDB();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+
 // Global rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -44,10 +45,15 @@ app.use("/api", limiter); // Apply rate limiting to all routes
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
+//you can see the logs in terminal
 
 // Body Parser Middleware
 app.use(express.json({ limit: "10kb" })); // Body limit is 10kb
-app.use(express.urlencoded({ extended: true, limit: "10kb" }));
+
+app.use(express.urlencoded({ extended: true, 
+  limit: "10kb" }));
+//any data that comes from URL
+
 app.use(cookieParser());
 
 // CORS Configuration
@@ -78,17 +84,27 @@ app.use("/api/v1/razorpay", razorpayRoute);
 app.use("/health", healthRoute);
 
 // 404 Handler
-
+app.use((req, res ) => {
+  res.status(404).json({
+    status: "error",
+    message: "Route not found!"
+  })
+})
 
 // Global Error Handler.
 app.use((err, req, res, next) => {
-  console.error(err);
-  return res.status(err.statusCode || 500).json({
-    status: "error",
-    message: err.message || "Internal server error",
-    ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
+  console.error(err.stack) //all details of the error
+  res.status(err.status || 500).json({
+    status: "error", //update the status
+    message: err.message || "Internal Server Error",
+    ...(process.env.NODE_ENV === "development" && { 
+      stack: err.stack,
+    }) //unloading stack above for debugging
   });
 });
+
+
+
 
 // Start server
 app.listen(PORT, () => {
