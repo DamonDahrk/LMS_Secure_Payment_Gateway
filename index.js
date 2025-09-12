@@ -26,7 +26,7 @@ await connectDB();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-
+//Cyber Security 1
 // Global rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -36,9 +36,11 @@ const limiter = rateLimit({
 
 // Security Middleware
 app.use(helmet()); // Set security HTTP headers
+
 // app.use(mongoSanitize()); // Data sanitization against NoSQL query injection
 // app.use(xss()); // Data sanitization against XSS
 app.use(hpp()); // Prevent HTTP Parameter Pollution
+
 app.use("/api", limiter); // Apply rate limiting to all routes
 
 // Logging Middleware
@@ -59,9 +61,9 @@ app.use(cookieParser());
 // CORS Configuration
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"],
+    origin: process.env.CLIENT_URL || "http://localhost:5173", 
+    credentials: true,  // Enable  
+    methods: ["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS" , "PATCH"],
     allowedHeaders: [
       "Content-Type",
       "Authorization",
@@ -70,9 +72,11 @@ app.use(
       "Access-Control-Allow-Origin",
       "Origin",
       "Accept",
-    ],
-  })
+    ], //WHAT KIND headers in the request header
+  }) //cors always requires an origin
 );
+
+
 
 // API Routes
 app.use("/api/v1/media", mediaRoute);

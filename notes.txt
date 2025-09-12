@@ -21,3 +21,34 @@ RBAC -> Role based Access Control middleware stuff.
 
 npm uninstall express 
 //how to uninstall something 
+
+app.use in inbuilt middleware so you have to use it
+
+cybersecurity time 
+express.rate.limit
+
+if someone is trying to ddos limit repeated requests to public APIs
+
+helmet (headers can be disabled, prevents some headers to be even sent)
+
+mongoose santizer helps you sanitze the express request parameters like
+queries params and body and headers based on Mongoose schema tree
+
+//avoids sql injections
+
+hpp package
+
+HTTP Parameter Pollution
+// web security vulnerability where an attacker sends multiple HTTP parameters with the same name in a single request, 
+//exploiting inconsistencies in how web servers and applications handle duplicate parameters
+
+//Attackers supply duplicate parameters (e.g., ?user=alice&user=bob) in HTTP GET or POST requests
+
+XSS (Cross-Site Scripting) is a web security vulnerability that allows attackers to 
+inject malicious scripts into web pages viewed by other users.
+
+which parses cookies attached to incoming HTTP requests and makes 
+them easily accessible as JavaScript objects on req.cookies
+
+CORS for cross origin request you need to know where the external requests are coming from
+it can be of different port and origin
