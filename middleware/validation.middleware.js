@@ -1,22 +1,28 @@
 import { body, param, query, validationResult } from 'express-validator';
-import { AppError } from './error.middleware.js';
+import { ApiError } from './error.middleware.js';
+//param = parameters that come from URL
 
 export const validate = (validations) => {
     return async (req, res, next) => {
         // Run all validations
         await Promise.all(validations.map(validation => validation.run(req)));
+        //LOOP to run all validations be it username or pass etc.
 
         const errors = validationResult(req);
         if (errors.isEmpty()) {
             return next();
         }
+        //if error is not there then skip
 
         const extractedErrors = errors.array().map(err => ({
             field: err.path,
             message: err.msg
-        }));
+        })); //find the error
+        //this express validator syntax
 
-        throw new AppError('Validation failed', 400, extractedErrors);
+        throw new ApiError('Validation failed', 
+            400,
+             extractedErrors);
     };
 };
 
@@ -38,6 +44,9 @@ export const commonValidations = {
             .isMongoId()
             .withMessage(`Invalid ${field} ID format`),
 
+  //normalize will convert email to lowercase, 
+  // remove dots ( . ), and plus signs 
+
     email: 
         body('email')
             .isEmail()
@@ -50,6 +59,7 @@ export const commonValidations = {
             .withMessage('Password must be at least 8 characters long')
             .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])/)
             .withMessage('Password must contain at least one number, one uppercase letter, one lowercase letter, and one special character'),
+        //validate password
 
     name:
         body('name')
@@ -99,4 +109,4 @@ export const validatePasswordChange = validate([
         })
         .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])/)
         .withMessage('Password must contain at least one number, one uppercase letter, one lowercase letter, and one special character')
-]);
+]); //check for pass change

@@ -16,14 +16,18 @@ const router = express.Router();
 
 // Auth routes
 router.post("/signup", validateSignup, createUserAccount);
+
+//run them when you to these places 
+
 router.post("/signin", validateSignin, authenticateUser);
 router.post("/signout", signOutUser);
 
 // Profile routes
+//next() makes it left to right
 router.get("/profile", isAuthenticated, getCurrentUserProfile);
 router.patch("/profile", 
     isAuthenticated, 
-    upload.single("avatar"), 
+    upload.single("avatar"), //return me the avatar in backend
     updateUserProfile
 );
 

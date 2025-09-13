@@ -104,7 +104,45 @@ export const getCurrentUserProfile = catchAsync(async (req, res) => {
  * @route PATCH /api/v1/users/profile
  */
 export const updateUserProfile = catchAsync(async (req, res) => {
-  // TODO: Implement update user profile functionality
+
+const { name, email, bio } = req.body;
+const updateData = {
+  name,
+  email: email?.toLowerCase(),
+  bio
+};
+
+if(req.file){
+  const avatarResult = await uploadMedia(req.file.path)
+  updateData.avatar = avatarResult.secure_url 
+
+  //delete old avatar
+
+  const user = await User.findById(req.id)
+  if(user.avatar && user.avatar !== 'default-avatar.png')
+  {
+    await deleteMediaFromCloudinary(user.avatar)
+  }
+}
+
+//update user and get updated doc
+const updatedUser = await User.findByIdAndUpdate(
+  req.id,
+  updateData,
+  {new: true, runValidators: true}
+)
+
+if(!updatedUser){
+  throw new ApiError("User not found", 404);
+}
+
+res.status(200).json({
+  success: true,
+  message: "Profile updated successfully",
+  data: updatedUser
+}
+)
+
 });
 
 /**

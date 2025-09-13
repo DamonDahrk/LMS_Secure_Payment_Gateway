@@ -1,5 +1,5 @@
 // Custom error class
-export class AppError extends Error { //extending existing ApiError
+export class ApiError extends Error { //extending existing ApiError
     constructor(message, statusCode) {
         super(message);
         //call constructor from error class
