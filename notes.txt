@@ -52,3 +52,19 @@ them easily accessible as JavaScript objects on req.cookies
 
 CORS for cross origin request you need to know where the external requests are coming from
 it can be of different port and origin
+
+Imagine a payment gateway scenario where the user clicks a "Pay Now" button,
+ enters their confidential details, and Razorpay or Stripe 
+ handles the transaction securely in the background. Our own route, 
+ like the /order route, sends the necessary data and keys to their 
+ backend, and they communicate with the bank, then return the payment
+  status to us.
+
+  BRAIN TREE DIAGRAM PAYPAL
+
+  front end -> token backend server -> 
+
+  razorpay_signature has to be created. that is created by order ID 
+  to match it later 
+
+  script from razorpay end:  checkout.razorpay.com/v1/checkout.js
