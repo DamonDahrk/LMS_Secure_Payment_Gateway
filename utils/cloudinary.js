@@ -1,6 +1,10 @@
 import { v2 as cloudinary } from "cloudinary";
-import dotenv from "dotenv";
+import dotenv from "dotenv";  //most important
 dotenv.config({});
+
+//sometimes variable are not being able to load here
+//for env variables
+
 
 cloudinary.config({
   api_key: process.env.API_KEY,
@@ -18,9 +22,11 @@ export const uploadMedia = async (file) => {
     console.log(error);
   }
 };
+
+//storing publicId in the db thats why
 export const deleteMediaFromCloudinary = async (publicId) => {
   try {
-    await cloudinary.uploader.destroy(publicId);
+    await cloudinary.uploader.destroy(publicId); //delete media
   } catch (error) {
     console.log(error);
   }
