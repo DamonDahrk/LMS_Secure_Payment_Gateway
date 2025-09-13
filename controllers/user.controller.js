@@ -2,7 +2,7 @@ import { User } from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import { generateToken } from "../utils/generateToken.js";
 import { deleteMediaFromCloudinary, uploadMedia } from "../utils/cloudinary.js";
-import { catchAsync } from "../middleware/error.middleware.js";
+import { catchAsync, ApiError } from "../middleware/error.middleware.js";
 import { AppError } from "../middleware/error.middleware.js";
 import crypto from "crypto";
 
@@ -11,7 +11,29 @@ import crypto from "crypto";
  * @route POST /api/v1/users/signup
  */
 export const createUserAccount = catchAsync(async (req, res) => {
-  // TODO: Implement create user account functionality
+  
+    const {name, email, password , role = "student"} = req.body
+    
+    //we will do valdiations globally 
+    const existingUser = await User.findOne({email: email.toLowerCase()})
+    //finding the user based on the email  
+
+    if(existingUser){
+      throw new ApiError('User already exists', 400);
+    }
+
+    const user = await User.create({
+      name,
+      email: email.toLowerCase(),
+      password,
+      role
+    })
+
+    await user.updateLastActive();
+    //as the user was the just created.
+    //passing user below:
+    generateToken(res, user, 'Account created')
+    //unique id created
 });
 
 /**
@@ -19,7 +41,22 @@ export const createUserAccount = catchAsync(async (req, res) => {
  * @route POST /api/v1/users/signin
  */
 export const authenticateUser = catchAsync(async (req, res) => {
-  // TODO: Implement user authentication functionality
+  const {email, password} =  req.body 
+
+  const user = User.findOne({email: email.toLowerCase()}).select('+password')
+  //password field will not be included here
+
+  if(!user || !(await user.comparePassword(password))){
+    throw new ApiError("Invalid email or password!", 401);
+ 
+  }
+
+  await user.updateLastActive()
+  generateToken(res,user, `Welcome back ${user.name}`);
+  
+  
+
+
 });
 
 /**
@@ -27,7 +64,11 @@ export const authenticateUser = catchAsync(async (req, res) => {
  * @route POST /api/v1/users/signout
  */
 export const signOutUser = catchAsync(async (_, res) => {
-  // TODO: Implement sign out functionality
+  res.cookie('token', '', {maxAge: 0})  //delete the cookie 
+  res.status(200).json({
+    success: true,
+    message: "Signed out successfully",
+  })
 });
 
 /**
@@ -35,7 +76,27 @@ export const signOutUser = catchAsync(async (_, res) => {
  * @route GET /api/v1/users/profile
  */
 export const getCurrentUserProfile = catchAsync(async (req, res) => {
-  // TODO: Implement get current user profile functionality
+  
+  const user = User.findById(req.id)
+  .populate({
+    path: "enrolledCourses.course",
+    select: 'title thumbnail description'
+  });   //get the deets
+
+  if(!user){
+    throw new ApiError("User not Found!",404);
+
+  }
+
+  res.status(200).json({
+    success: true,
+    data: {
+      ...user.toJSON(),  //spread
+      totalEnrolledCourses: user.totalEnrolledCourses,
+
+    }
+  })
+  
 });
 
 /**

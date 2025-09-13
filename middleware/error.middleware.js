@@ -1,9 +1,11 @@
 // Custom error class
-export class AppError extends Error {
+export class AppError extends Error { //extending existing ApiError
     constructor(message, statusCode) {
         super(message);
+        //call constructor from error class
         this.statusCode = statusCode;
         this.status = `${statusCode}`.startsWith('4') ? 'fail' : 'error';
+        // 4xx is clien terror, 5xx is server error
         this.isOperational = true;
 
         Error.captureStackTrace(this, this.constructor);
@@ -16,6 +18,10 @@ export const catchAsync = (fn) => {
         fn(req, res, next).catch(next);
     };
 };
+
+//catchAsync(fn) takes an async function (usually a controller).
+//Returns a function with parameters (req, res, next), which are standard Express handler arguments.
+//Executes the async function (fn) and attaches .catch(next) so any rejection will call next(error).
 
 // Global error handling middleware
 export const errorHandler = (err, req, res, next) => {
@@ -68,6 +74,8 @@ export const handleMongoError = (err) => {
 // Handle JWT errors
 export const handleJWTError = () => 
     new AppError('Invalid token. Please log in again!', 401);
+
+//centralizing it as above 
 
 export const handleJWTExpiredError = () => 
     new AppError('Your token has expired! Please log in again.', 401);

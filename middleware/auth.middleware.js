@@ -1,13 +1,14 @@
 import jwt from "jsonwebtoken";
 import { AppError } from "./error.middleware.js";
-import { catchAsync } from "./error.middleware.js";
+import { catchAsync, ApiError } from "./error.middleware.js";
 import { User } from "../models/user.model.js";
+import { check } from "express-validator";
 
 export const isAuthenticated = catchAsync(async (req, res, next) => {
   // Check if token exists in cookies
   const token = req.cookies.token;
   if (!token) {
-    throw new AppError(
+    throw new ApiError(
       "You are not logged in. Please log in to get access.",
       401
     );
@@ -16,12 +17,16 @@ export const isAuthenticated = catchAsync(async (req, res, next) => {
   try {
     // Verify token
     const decoded = await jwt.verify(token, process.env.JWT_SECRET);
+    //extract it back to check
 
     // Add user ID to request
     req.id = decoded.userId;
+
     const user = await User.findById(req.id);
+    //find the user
+
     if (!user) {
-      throw new AppError("User not found", 404);
+      throw new ApiError("User not found", 404);
     }
 
     req.user = user;
@@ -29,10 +34,10 @@ export const isAuthenticated = catchAsync(async (req, res, next) => {
     next();
   } catch (error) {
     if (error.name === "JsonWebTokenError") {
-      throw new AppError("Invalid token. Please log in again.", 401);
+      throw new ApiError("Invalid token. Please log in again.", 401);
     }
     if (error.name === "TokenExpiredError") {
-      throw new AppError("Your token has expired. Please log in again.", 401);
+      throw new ApiError("Your token has expired. Please log in again.", 401);
     }
     throw error;
   }
@@ -43,7 +48,7 @@ export const restrictTo = (...roles) => {
   return catchAsync(async (req, res, next) => {
     // roles is an array ['admin', 'instructor']
     if (!roles.includes(req.user.role)) {
-      throw new AppError(
+      throw new ApiError(
         "You do not have permission to perform this action",
         403
       );
